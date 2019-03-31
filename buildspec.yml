@@ -5,9 +5,10 @@ phases:
     commands:
       - cd $CODEBUILD_SRC_DIR
       - mvn clean install
+      - cp cicd/* .
       - sed -i 's/\r//' ./deploy-cicd-demo-DEV.sh
-      - chmod +x ./deploy-cicd-demo-DEV.sh
-      - sh ./deploy-cicd-demo-DEV.sh
+      - chmod +x ./package-cicd-demo-DEV.sh
+      - sh ./package-cicd-demo-DEV.sh
 
 artifacts:
   base-directory: $CODEBUILD_SRC_DIR
