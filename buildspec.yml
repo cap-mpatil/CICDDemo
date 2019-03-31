@@ -6,7 +6,7 @@ phases:
       - cd $CODEBUILD_SRC_DIR
       - mvn clean install
       - cp cicd/* .
-      - sed -i 's/\r//' ./deploy-cicd-demo-DEV.sh
+      - sed -i 's/\r//' ./package-cicd-demo-DEV.sh
       - chmod +x ./package-cicd-demo-DEV.sh
       - sh ./package-cicd-demo-DEV.sh
 
