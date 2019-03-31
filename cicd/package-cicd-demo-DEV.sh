@@ -33,7 +33,7 @@ echo ""
 #-------------------------------------------------------------------------------------------------
 # Package: Upload the modifies files to S3 and update the template with S3 path
 #-------------------------------------------------------------------------------------------------
-aws.exe cloudformation package \
+aws cloudformation package \
 	--template-file ./sam-cicd-demo-lambdas-pre-packaged.yml \
 	--s3-bucket $s3BucketForArtifacts \
 	--s3-prefix $s3FolderPrefixForArtifacts \
