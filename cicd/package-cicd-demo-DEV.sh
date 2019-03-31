@@ -10,7 +10,7 @@ securityGroupId=sg-0218decf8ff3c408a
 apiDeployStageName=dev
 
 s3BucketForArtifacts=capdev-deployment
-s3FolderPrefixForArtifacts=ccs-pipeline
+s3FolderPrefixForArtifacts=cicd-demo-pipeline
 
 RELEASE_VERSION_NUMBER=1.0
 
