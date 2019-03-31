@@ -1,0 +1,116 @@
+###################################################################################################
+#### This script assumes a VPC is present and its id is passed as a parameter
+####
+#### This SAM template creates the "cicddemo" lambda
+####   - Role required by lambdas 
+####   - Publishes new version of lambda and creates alias pointing to that new version
+####   - Alias name will be based on the environment that you are running this script in
+####
+###################################################################################################
+
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: CICD Demo - Serverless Application Model example
+
+Metadata:
+    About:
+        Description: "CICD Demo - Lambda"
+    Author:
+        Description: "CAP Architecture Team"
+    Date:
+        Description: "2019-01-19"
+    AWS::CloudFormation::Interface:
+        ParameterGroups:
+            - Label:
+                default: "General Settings"
+              Parameters:
+                - environment
+            - Label:
+                default: "VPC Configuration"
+              Parameters:
+                - subnetId1
+                - subnetId2
+                - securityGroupId
+
+Parameters: 
+  environment:
+    Description: Which environment is this?
+    Type: String
+    AllowedValues: 
+      - DEV
+      - TST
+      - UAT
+      - SUP
+      - PRD
+  subnetId1: 
+    Description: Enter the first subnet id for lambdas
+    Type: AWS::EC2::Subnet::Id
+  subnetId2: 
+    Description: Enter the second subnet id for lambdas
+    Type: AWS::EC2::Subnet::Id
+  securityGroupId: 
+    Description: Enter the security group id for lambdas
+    Type: AWS::EC2::SecurityGroup::Id
+
+Resources:
+  # ----------------------------------------------------------------------------------
+  # Create a role that will be used by all common-services lambdas
+  # ----------------------------------------------------------------------------------
+  CICDDemoCommonLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+      Policies: 
+        - 
+          PolicyName: "CCSLambdaS3Poilicy"
+          PolicyDocument: 
+            Version: "2012-10-17"
+            Statement: 
+              - 
+                Effect: "Allow"
+                Action: "s3:*"
+                Resource: "*"
+        - 
+          PolicyName: "CCSLambdaSSMParameterStorePoilicy"
+          PolicyDocument: 
+            Version: "2012-10-17"
+            Statement: 
+              - 
+                Effect: "Allow"
+                Action: "ssm:GetParameter"
+                Resource: "*"
+
+  # ----------------------------------------------------------------------------------
+  # "readCache" lambda
+  # ----------------------------------------------------------------------------------
+  cicdDemoLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: cicdDemoLambda
+      Description: cicd Demo Lambda
+      CodeUri: target/cicddemo-[RELEASE_VERSION_NUMBER].jar
+      Handler: org.cap.aws.cicd.cicddemo.LambdaFunctionHandler::handleRequest    
+      AutoPublishAlias: !Ref environment
+      Role:
+        Fn::GetAtt:
+        - CICDDemoCommonLambdaExecutionRole
+        - Arn
+      Runtime: java8
+      MemorySize: 512
+      Timeout: 50
+      VpcConfig:
+        SubnetIds:
+          - !Ref subnetId1
+          - !Ref subnetId2
+        SecurityGroupIds:
+          - !Ref securityGroupId

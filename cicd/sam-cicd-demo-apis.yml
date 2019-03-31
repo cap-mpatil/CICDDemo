@@ -1,0 +1,116 @@
+###################################################################################################
+#### This script assumes cicddemo lambda has been created
+####
+#### This template creates the following resources in API gateway
+####   - /cicd  GET
+####
+###################################################################################################
+
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: cicd demo API
+
+Metadata:
+    About:
+        Description: "Create CICD Demo API end points"
+    Author:
+        Description: "CAP Architecture Team"
+    Date:
+        Description: "2019-01-19"
+    AWS::CloudFormation::Interface:
+        ParameterGroups:
+            - Label:
+                default: "General Settings"
+              Parameters:
+                - environment
+                - apiDeployStageName
+
+Parameters: 
+  environment:
+    Description: Which environment is this?
+    Type: String
+    AllowedValues: 
+      - DEV
+      - TST
+      - UAT
+      - SUP
+      - PRD
+  apiDeployStageName:
+    Description: Specify stage name for your API Deployment
+    Type: String
+
+Resources:
+  CICDDemoApis:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: CICD Demo API
+      StageName: !Ref apiDeployStageName
+      EndpointConfiguration: REGIONAL
+      DefinitionBody:
+        swagger: "2.0"
+        info:
+          version: "2019-01-08T17:51:41Z"
+          title: "CICDDemoApis"
+          description: "CICD Demo API end points"
+        schemes:
+        - "https"
+        paths:
+          # ----------------------------------------------------------------------------------
+          # "/cicd" resource
+          # ----------------------------------------------------------------------------------
+          /cicd:
+            get:
+              produces:
+              - application/json
+              responses:
+                '200':
+                  description: "200 response"
+              x-amazon-apigateway-integration:
+                uri:
+                  Fn::Join:
+                  - ''
+                  - - 'arn:aws:apigateway:'
+                    - Ref: AWS::Region
+                    - ":lambda:path/2015-03-31/functions/arn:aws:lambda:"
+                    - Ref: AWS::Region
+                    - ":"
+                    - Ref: AWS::AccountId
+                    - ":function:cicdDemoLambda:"
+                    - !Ref environment
+                    - "/invocations"
+                responses:
+                  default:
+                    statusCode: "200"
+                passthroughBehavior: "when_no_match"
+                httpMethod: "POST"
+                contentHandling: "CONVERT_TO_TEXT"
+                type: "aws_proxy"
+
+  # ----------------------------------------------------------------------------------
+  # Give permission to API gateway to execute the following lambdas
+  # ----------------------------------------------------------------------------------
+
+  cicdDemoLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:invokeFunction
+      FunctionName:
+        Fn::Join:
+        - ''
+        - - "arn:aws:lambda:"
+          - Ref: AWS::Region
+          - ":"
+          - Ref: AWS::AccountId
+          - ":function:cicdDemoLambda:"
+          - !Ref environment      
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+        - ''
+        - - 'arn:aws:execute-api:'
+          - Ref: AWS::Region
+          - ":"
+          - Ref: AWS::AccountId
+          - ":"
+          - Ref: CICDDemoApis
+          - "/*"
