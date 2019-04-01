@@ -1,0 +1,8 @@
+{
+    "Parameters": {
+        "environment": "DEV",
+        "subnetId1": "01d3cf56c3391b8f5",
+        "subnetId2": "01d3cf56c3391b8f5",
+        "securityGroupId": "sg-0218decf8ff3c408a"
+    }
+}
