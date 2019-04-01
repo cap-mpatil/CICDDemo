@@ -22,7 +22,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 
         JSONObject responseJson = new JSONObject();
         String jsonMessage = "{\n";
-        jsonMessage += "    \"message\": \"Hello from CICD Demo Lambda - Updating infront of Himanshu...\",\n";
+        jsonMessage += "    \"message\": \"Hello from CICD Demo Lambda - Testing Blue/Green Deployment...\",\n";
         jsonMessage += "    \"lambdaFunctionName\": \"" + context.getFunctionName() + "\",\n";
         jsonMessage += "    \"lambdaFunctionVersion\": \"" + context.getFunctionVersion() + "\",\n";
         jsonMessage += "    \"lambdaFunctionInvokeARN\": \"" + context.getInvokedFunctionArn() + "\"\n";
