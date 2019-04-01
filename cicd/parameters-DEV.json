@@ -1,9 +1,0 @@
-{
-    "Parameters": {
-        "environment": "DEV",
-        "apiDeployStageName": "dev",
-        "subnetId1": "subnet-01d3cf56c3391b8f5",
-        "subnetId2": "subnet-01d3cf56c3391b8f5",
-        "securityGroupId": "sg-0218decf8ff3c408a"
-    }
-}
