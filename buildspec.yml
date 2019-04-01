@@ -15,4 +15,5 @@ artifacts:
   files:
     - sam-cicd-demo-lambdas-packaged.yml
     - parameters-DEV.json
+    - sam-cicd-demo-apis.yml
   name: CICD-Demo-Build-Artifact
