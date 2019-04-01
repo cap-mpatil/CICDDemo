@@ -14,3 +14,4 @@ artifacts:
   base-directory: $CODEBUILD_SRC_DIR
   files:
     - sam-cicd-demo-lambdas-packaged.yml
+  name: CICD-Demo-Build-Artifact
